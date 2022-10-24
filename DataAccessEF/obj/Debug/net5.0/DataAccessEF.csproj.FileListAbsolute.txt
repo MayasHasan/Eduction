@@ -1,0 +1,15 @@
+E:\EducationSysetm\DataAccessEF\bin\Debug\net5.0\DataAccessEF.deps.json
+E:\EducationSysetm\DataAccessEF\bin\Debug\net5.0\DataAccessEF.dll
+E:\EducationSysetm\DataAccessEF\bin\Debug\net5.0\ref\DataAccessEF.dll
+E:\EducationSysetm\DataAccessEF\bin\Debug\net5.0\DataAccessEF.pdb
+E:\EducationSysetm\DataAccessEF\bin\Debug\net5.0\Core.dll
+E:\EducationSysetm\DataAccessEF\bin\Debug\net5.0\Core.pdb
+E:\EducationSysetm\DataAccessEF\obj\Debug\net5.0\DataAccessEF.csproj.AssemblyReference.cache
+E:\EducationSysetm\DataAccessEF\obj\Debug\net5.0\DataAccessEF.GeneratedMSBuildEditorConfig.editorconfig
+E:\EducationSysetm\DataAccessEF\obj\Debug\net5.0\DataAccessEF.AssemblyInfoInputs.cache
+E:\EducationSysetm\DataAccessEF\obj\Debug\net5.0\DataAccessEF.AssemblyInfo.cs
+E:\EducationSysetm\DataAccessEF\obj\Debug\net5.0\DataAccessEF.csproj.CoreCompileInputs.cache
+E:\EducationSysetm\DataAccessEF\obj\Debug\net5.0\DataAccessEF.csproj.CopyComplete
+E:\EducationSysetm\DataAccessEF\obj\Debug\net5.0\DataAccessEF.dll
+E:\EducationSysetm\DataAccessEF\obj\Debug\net5.0\ref\DataAccessEF.dll
+E:\EducationSysetm\DataAccessEF\obj\Debug\net5.0\DataAccessEF.pdb
