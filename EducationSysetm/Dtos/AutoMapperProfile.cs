@@ -23,7 +23,8 @@ namespace EducationSysetm.Dtos
             CreateMap<TeacherAddDto, Teacher>();
             CreateMap<TeacherUpdateDto, Teacher>();
             CreateMap<Teacher, TeacherGetDto>();
-
+            CreateMap<File, AddFileDto>();
+            CreateMap<AddFileDto, File>();
         }
     }
 }

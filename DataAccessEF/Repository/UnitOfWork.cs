@@ -1,5 +1,6 @@
 ﻿using Core.Entity;
 using Core.IRepository;
+using Core.ModelForAuth;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,17 +17,25 @@ namespace DataAccessEF.Repository
         private readonly IGenericRepository<Teacher> _teachers;
         private readonly IGenericRepository<Session> _sessions;
         private readonly IGenericRepository<Student> _students;
+        private readonly IGenericRepository<ApplicationUser> _applicationUsers;
+        private readonly IGenericRepository<File> _files;
+
         public UnitOfWork(AppDbContext context,
             IGenericRepository<Course> courses,
            IGenericRepository<Teacher> teachers,
            IGenericRepository<Session> sessions,
-           IGenericRepository<Student> students)
+           IGenericRepository<Student> students,
+          IGenericRepository<ApplicationUser> applicationUsers,
+           IGenericRepository<File> file)
+
         {
             _context = context;
             _courses = courses;
             _teachers = teachers;
             _sessions = sessions;
             _students = students;
+            _applicationUsers = applicationUsers;
+            _files = file;
         }
         public IGenericRepository<Course> Courses => _courses;
 
@@ -35,6 +44,10 @@ namespace DataAccessEF.Repository
         public IGenericRepository<Session> Sessions => _sessions;
 
         public IGenericRepository<Student> Students => _students ;
+        public IGenericRepository<File> Files => _files;
+
+        public IGenericRepository<ApplicationUser> ApplicationUsers => _applicationUsers;
+
 
         public void Dispose()
         {

@@ -17,12 +17,10 @@ namespace Core.IRepository
             Expression<Func<T, bool>> exprssion = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             List<string> includes = null);
-
- 
-        Task<T> Get(Expression<Func<T, bool>> exprssion, List<string> includes = null);
-        Task AddAsync(T entity);
-        Task AddRangeASync(IEnumerable<T>entities);
-        Task Delete(T entity);
+        Task<T> GetAsync(Expression<Func<T, bool>> exprssion, List<string> includes = null);
+        Task<T> AddAsync(T entity);
+        Task<IEnumerable<T>> AddRangeASync(IEnumerable<T>entities);
+        Task Delete(int id);
         void DeleteRange(IEnumerable<T> entities);
         T Update(T entity);
         Task<int> CountAsync();

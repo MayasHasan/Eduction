@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,6 +35,7 @@ namespace EducationSysetm
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        [Obsolete]
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<Jwt>(Configuration.GetSection("JWT"));
@@ -50,7 +50,7 @@ namespace EducationSysetm
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "EducationSysetm", Version = "v1" });
             });
-            
+
             services.AddFluentValidation(x => x.RegisterValidatorsFromAssemblyContaining<Startup>());
             services.AddAutoMapper( typeof(Startup));
             services.AddControllers().AddNewtonsoftJson(x =>
@@ -107,7 +107,7 @@ namespace EducationSysetm
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseStaticFiles();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

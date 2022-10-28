@@ -75,7 +75,7 @@ namespace EducationSysetm.Controller
         public async Task<IActionResult> GetSessionById(int id)
         {
 
-            var sessionItem = await _uow.Sessions.Get(x => x.Id == id, new List<string>() { "Teacher" });
+            var sessionItem = await _uow.Sessions.GetAsync(x => x.Id == id, new List<string>() { "Teacher" });
             if (sessionItem != null)
             {
                 return Ok(_mapper.Map<SessionGetDto>(sessionItem));
@@ -110,7 +110,7 @@ namespace EducationSysetm.Controller
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSession(int id, SessionUpdateDto studentUpdateDto)
         {
-            var sessionItem = await _uow.Sessions.Get(x => x.Id == id);
+            var sessionItem = await _uow.Sessions.GetAsync(x => x.Id == id);
             if (sessionItem == null)
             {
                 return NotFound("it's not found in the database");
@@ -130,7 +130,7 @@ namespace EducationSysetm.Controller
             {
                 return NotFound("it's not found in the database");
             }
-            await _uow.Sessions.Delete(sessionItem);
+            await _uow.Sessions.Delete(id);
             await _uow.Save();
             _logger.LogInformation("someone deleted a Course");
             return NoContent();
@@ -173,7 +173,7 @@ namespace EducationSysetm.Controller
         [HttpPost("{id}"), ActionName("Delete")]
         public async Task<IActionResult> DeleteSessionfromCoursess(int id,  [FromQuery] int? courseId)
         {
-            var session = await _uow.Sessions.Get(x => x.Id == id);
+            var session = await _uow.Sessions.GetAsync(x => x.Id == id);
             if (session == null)
             {
                 return NotFound("it's not found in the database");
@@ -190,7 +190,7 @@ namespace EducationSysetm.Controller
         [HttpPost("{id}/Student"), ActionName("Delete")]
         public async Task<IActionResult> DeleteStudentfromSession(int id, [FromQuery] int? studentId)
         {
-            var sessionItem = await _uow.Sessions.Get(x => x.Id == id, new List<string> { "Students" });
+            var sessionItem = await _uow.Sessions.GetAsync(x => x.Id == id, new List<string> { "Students" });
             if (sessionItem == null)
             {
                 return NotFound("it's not found in the database");

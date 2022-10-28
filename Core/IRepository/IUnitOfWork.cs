@@ -1,4 +1,5 @@
 ﻿using Core.Entity;
+using Core.ModelForAuth;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace Core.IRepository
         IGenericRepository<Teacher> Teachers { get; }
         IGenericRepository<Session> Sessions { get; }
         IGenericRepository<Student> Students { get; }
+        IGenericRepository<File> Files { get; }
+        IGenericRepository<ApplicationUser> ApplicationUsers { get; }
         Task<int> Save(); 
     }
 }

@@ -20,29 +20,19 @@ namespace DataAccessEF.Repository
             _context = context;
             _dbSet = _context.Set<T>();
         }
-        public async Task AddAsync(T entity)
+        public async Task<T> AddAsync(T entity)
         {
 
             await _dbSet.AddAsync(entity);
+            return entity;
         }
 
-        public async Task AddRangeASync(IEnumerable<T> entities)
+        public async Task<IEnumerable<T>> AddRangeASync(IEnumerable<T> entities)
         {
             await _dbSet.AddRangeAsync(entities);
+            return entities;
         }
-
-        public async Task<T> Get(Expression<Func<T, bool>> exprssion, List<string> includes = null)
-        {
-            IQueryable<T> query = _dbSet;
-            if (includes != null)
-            {
-                foreach (var includePropery in includes)
-                {
-                    query = query.Include(includePropery);
-                }
-            }
-            return await query.FirstOrDefaultAsync(exprssion);
-        }
+   
        
         public async Task<PagedList<T>> GetAllAsync(PagingDetails pagingDetails, Expression<Func<T, bool>> exprssion = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<string> includes = null)
         {
@@ -63,8 +53,7 @@ namespace DataAccessEF.Repository
             {
                 query = orderBy(query);
             }
-
-            return  PagedList<T>.ToPagedList( query, pagingDetails.PageNumber, pagingDetails.PageSize);
+            return PagedList<T>.ToPagedList( query, pagingDetails.PageNumber, pagingDetails.PageSize);
         }
 
         public async Task<T> GetByIdAsync(int id)
@@ -72,9 +61,22 @@ namespace DataAccessEF.Repository
             return await _context.Set<T>().FindAsync(id);
 
         }
-        public async Task Delete(T entity)
+        public async Task<T> GetAsync(Expression<Func<T, bool>> exprssion, List<string> includes = null)
         {
+            IQueryable<T> query = _dbSet;
+            if (includes != null)
+            {
+                foreach (var includePropery in includes)
+                {
+                    query = query.Include(includePropery);
+                }
+            }
+            return await query.FirstOrDefaultAsync(exprssion);
+        }
 
+        public async Task Delete(int id)
+        {
+             var entity = await GetByIdAsync(id);
             if (entity == null)
             {
                 throw new ArgumentNullException(" Entity Not Found");
@@ -86,6 +88,7 @@ namespace DataAccessEF.Repository
         {
             _dbSet.RemoveRange(entities);
         }
+
         public T Update(T entity)
         {
             if (entity == null)

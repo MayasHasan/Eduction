@@ -23,7 +23,7 @@ namespace DataAccessEF
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Session> Sessions { get; set; }
-
+        public DbSet<File> Files { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             new CourseConfiguration().Configure(modelBuilder.Entity<Course>());

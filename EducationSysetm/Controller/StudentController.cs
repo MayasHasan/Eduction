@@ -75,7 +75,7 @@ namespace EducationSysetm.Controller
         public async Task<IActionResult> GetStudentById(int id)
         {
 
-            var studentItem = await _uow.Students.Get(x => x.Id == id, new List<string>() { "Teacher" });
+            var studentItem = await _uow.Students.GetAsync(x => x.Id == id, new List<string>() { "Teacher" });
             if (studentItem != null)
             {
                 return Ok(_mapper.Map<StudentGetDto>(studentItem));
@@ -109,7 +109,7 @@ namespace EducationSysetm.Controller
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateStudent(int id, StudentUpdateDto  studentUpdateDto)
         {
-            var studentItem = await _uow.Students.Get(x => x.Id == id);
+            var studentItem = await _uow.Students.GetAsync(x => x.Id == id);
             if (studentItem == null)
             {
                 return NotFound("it's not found in the database");
@@ -129,7 +129,7 @@ namespace EducationSysetm.Controller
             {
                 return NotFound("it's not found in the database");
             }
-            await _uow.Students.Delete(studentItem);
+            await _uow.Students.Delete(id);
             await _uow.Save();
             _logger.LogInformation("someone deleted a Course");
             return NoContent();

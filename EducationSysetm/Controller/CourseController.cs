@@ -80,7 +80,7 @@ namespace EducationSysetm.Controller
         public async Task<IActionResult> GetCourseById(int id)
         {
 
-            var courseItem = await _uow.Courses.Get(x => x.Id == id, new List<string>() { "Students" ,"Sessions" });
+            var courseItem = await _uow.Courses.GetAsync(x => x.Id == id, new List<string>() { "Students" ,"Sessions" });
             if (courseItem != null)
             {
                 return Ok(_mapper.Map<CourseGetDto>(courseItem));
@@ -104,8 +104,7 @@ namespace EducationSysetm.Controller
         [HttpPost("AddMultiCourse")]
         public async Task<IActionResult> CreateCourses(IEnumerable<CourseAddDto> courseAddDto)
         {
-            var courseItems = _mapper.Map<IList<Course>>(courseAddDto);
-
+            var courseItems = _mapper.Map<IList<Course>>(courseAddDto);         
             await _uow.Courses.AddRangeASync(courseItems);
             await _uow.Save();
             return Ok("Success");
@@ -116,7 +115,7 @@ namespace EducationSysetm.Controller
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCourse(int id, CourseUpdateDto courseUpdateDto)
         {
-            var courseItem = await _uow.Courses.Get(x => x.Id == id);
+            var courseItem = await _uow.Courses.GetAsync(x => x.Id == id);
             if (courseItem == null)
             {
                 return NotFound("it's not found in the database");
@@ -136,7 +135,7 @@ namespace EducationSysetm.Controller
             {
                 return NotFound("it's not found in the database");
             }
-            await _uow.Courses.Delete(courseItem);
+            await _uow.Courses.Delete(id);
             await _uow.Save();
             _logger.LogInformation("someone deleted a Course");
             return NoContent();
@@ -233,7 +232,7 @@ namespace EducationSysetm.Controller
         [HttpPost("{id}"), ActionName("Delete")]
         public async Task<IActionResult> DeleteEntityfromCoursess(int id,[FromQuery] int? studentId ,  [FromQuery] int? teacherId)
         {
-              var courseItem = await _uow.Courses.Get(x=>x.Id==id , new List<string>{ "Students" ,"Sessions"});
+              var courseItem = await _uow.Courses.GetAsync(x=>x.Id==id , new List<string>{ "Students" ,"Sessions"});
             if (courseItem == null)
             {
                 return NotFound("it's not found in the database");
@@ -260,5 +259,6 @@ namespace EducationSysetm.Controller
 
 
         }
+      
     }
 }

@@ -59,6 +59,32 @@ namespace DataAccessEF.Migrations
                     b.ToTable("Courses");
                 });
 
+            modelBuilder.Entity("Core.Entity.File", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("InsertOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Files");
+                });
+
             modelBuilder.Entity("Core.Entity.Session", b =>
                 {
                     b.Property<int>("Id")
@@ -250,15 +276,15 @@ namespace DataAccessEF.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "5fddde78-5a76-41a6-babf-df1786d3eddd",
-                            ConcurrencyStamp = "55638a27-1c39-4cb1-84df-9052129682c7",
+                            Id = "39302877-bd39-4f9d-a1e2-45701945e4f4",
+                            ConcurrencyStamp = "92bd38e6-1ae8-462d-a7f2-2cce3f17a493",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "55f97ef6-aedd-4cc1-93b4-c86bd188a93d",
-                            ConcurrencyStamp = "b7d34234-bfd5-4087-85ea-cd97da881fef",
+                            Id = "04fc4776-e593-44eb-a3da-bc72d577c385",
+                            ConcurrencyStamp = "a69d2782-645b-4308-a763-b7bea3787f1b",
                             Name = "Admin",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -393,6 +419,16 @@ namespace DataAccessEF.Migrations
                     b.Navigation("Teacher");
                 });
 
+            modelBuilder.Entity("Core.Entity.File", b =>
+                {
+                    b.HasOne("Core.ModelForAuth.ApplicationUser", "User")
+                        .WithMany("Files")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Core.Entity.Session", b =>
                 {
                     b.HasOne("Core.Entity.Course", "Course")
@@ -492,6 +528,11 @@ namespace DataAccessEF.Migrations
             modelBuilder.Entity("Core.Entity.Teacher", b =>
                 {
                     b.Navigation("Courses");
+                });
+
+            modelBuilder.Entity("Core.ModelForAuth.ApplicationUser", b =>
+                {
+                    b.Navigation("Files");
                 });
 #pragma warning restore 612, 618
         }
