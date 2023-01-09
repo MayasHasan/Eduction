@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Core.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +9,10 @@ namespace EducationSysetm.Dtos
     public class SessionGetDto
     {
         public int Id { get; set; }
-        public string SessionNumber { get; set; }
+        public string SessionTitle { get; set; }
+        public string Description { get; set; }
+        public int? CourseId { get; set; }
+
         public DateTime? Date { get; set; }
     }
 }

@@ -10,11 +10,13 @@ namespace Core.Entity
     {
 
         public int Id { get; set; }
-        public string SessionNumber { get; set; }
+        public string SessionTitle { get; set; }
         public DateTime? Date { get; set; }
         public Course Course { get; set; }
         public int? CourseId { get; set; }
+        public string Description { get; set; }
         public IList<Student> Students { get; set; }
+        public IList<File> Files { get; set; } = null;
 
 
     }

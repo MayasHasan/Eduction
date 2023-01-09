@@ -38,8 +38,8 @@ namespace DataAccessEF.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Level")
-                        .HasColumnType("int");
+                    b.Property<string>("Level")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
@@ -66,6 +66,9 @@ namespace DataAccessEF.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("CourseId")
+                        .HasColumnType("int");
+
                     b.Property<string>("FileName")
                         .HasColumnType("nvarchar(max)");
 
@@ -75,10 +78,17 @@ namespace DataAccessEF.Migrations
                     b.Property<DateTime>("InsertOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("SessionId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("SessionId");
 
                     b.HasIndex("UserId");
 
@@ -98,7 +108,10 @@ namespace DataAccessEF.Migrations
                     b.Property<DateTime?>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("SessionNumber")
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SessionTitle")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
@@ -117,15 +130,27 @@ namespace DataAccessEF.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<DateTime?>("JoinedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Level")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
                         .HasColumnType("nvarchar(max)");
@@ -142,19 +167,43 @@ namespace DataAccessEF.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("AppUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime?>("JoinedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<string>("Level")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("Salary")
                         .HasMaxLength(20)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Specialization")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -276,15 +325,15 @@ namespace DataAccessEF.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "39302877-bd39-4f9d-a1e2-45701945e4f4",
-                            ConcurrencyStamp = "92bd38e6-1ae8-462d-a7f2-2cce3f17a493",
+                            Id = "03f31544-120b-4832-a976-55bc433cf221",
+                            ConcurrencyStamp = "843bb19f-54a7-4ade-ae84-3434e7070315",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "04fc4776-e593-44eb-a3da-bc72d577c385",
-                            ConcurrencyStamp = "a69d2782-645b-4308-a763-b7bea3787f1b",
+                            Id = "572afb1d-b73c-4b9d-a0e7-ff98a7495137",
+                            ConcurrencyStamp = "738956f1-af3d-48ff-8dbe-c5911e409f15",
                             Name = "Admin",
                             NormalizedName = "ADMINISTRATOR"
                         });
@@ -414,17 +463,27 @@ namespace DataAccessEF.Migrations
                     b.HasOne("Core.Entity.Teacher", "Teacher")
                         .WithMany("Courses")
                         .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("Core.Entity.File", b =>
                 {
+                    b.HasOne("Core.Entity.Course", null)
+                        .WithMany("Files")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Core.Entity.Session", null)
+                        .WithMany("Files")
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Core.ModelForAuth.ApplicationUser", "User")
                         .WithMany("Files")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("User");
                 });
@@ -434,7 +493,7 @@ namespace DataAccessEF.Migrations
                     b.HasOne("Core.Entity.Course", "Course")
                         .WithMany("Sessions")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Course");
                 });
@@ -444,13 +503,13 @@ namespace DataAccessEF.Migrations
                     b.HasOne("Core.Entity.Course", null)
                         .WithMany()
                         .HasForeignKey("CoursesId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Core.Entity.Student", null)
                         .WithMany()
                         .HasForeignKey("StudentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -510,19 +569,26 @@ namespace DataAccessEF.Migrations
                     b.HasOne("Core.Entity.Session", null)
                         .WithMany()
                         .HasForeignKey("SessionsId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Core.Entity.Student", null)
                         .WithMany()
                         .HasForeignKey("StudentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("Core.Entity.Course", b =>
                 {
+                    b.Navigation("Files");
+
                     b.Navigation("Sessions");
+                });
+
+            modelBuilder.Entity("Core.Entity.Session", b =>
+                {
+                    b.Navigation("Files");
                 });
 
             modelBuilder.Entity("Core.Entity.Teacher", b =>

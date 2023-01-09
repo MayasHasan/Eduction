@@ -1,4 +1,5 @@
 ﻿using Core.Entity;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,11 @@ namespace EducationSysetm.Dtos
         public string Title { get; set; }
         public decimal FullPrice { get; set; }
         public string Description { get; set; }
-        public DateTime? StartDate { get; set; }
+        public DateTime? StartDate { get; set; } 
         public DateTime? EndDate { get; set; }
-        public CourseLevel Level { get; set; }
-    
+        public string Level { get; set; }
+        public IList<IFormFile>? FilePath { get; set; }
+
 
     }
 }

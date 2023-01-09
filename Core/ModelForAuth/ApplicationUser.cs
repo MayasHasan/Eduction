@@ -14,5 +14,7 @@ namespace Core.ModelForAuth
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public IList<File> Files { get; set; } = null;
+
+
     }
 }

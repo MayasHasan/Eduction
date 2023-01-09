@@ -12,8 +12,6 @@ namespace DataAccessEF.FluentApIConfig
     {
         public void Configure(EntityTypeBuilder<Teacher> builder)
         {
-
-
             builder.Property(t =>t.FirstName)
                    .IsRequired()
                    .HasMaxLength(20);
@@ -23,6 +21,7 @@ namespace DataAccessEF.FluentApIConfig
             builder.Property(t => t.Salary)
                 .IsRequired()
                 .HasMaxLength(20);
+
          
 
         }

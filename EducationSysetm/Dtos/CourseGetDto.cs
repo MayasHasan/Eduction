@@ -14,7 +14,7 @@ namespace EducationSysetm.Dtos
         public string Description { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public CourseLevel Level { get; set; }
+        public string Level { get; set; }
         public Teacher Teacher { get; set; }
         public IList<Student> Students { get; set; }
         public IList<Session> Sessions { get; set; }

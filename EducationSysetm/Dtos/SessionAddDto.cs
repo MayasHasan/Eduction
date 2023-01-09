@@ -8,7 +8,9 @@ namespace EducationSysetm.Dtos
 {
     public class SessionAddDto
     {
-        public string SessionNumber { get; set; }
+        public string SessionTitle { get; set; }
+        public string Description { get; set; }
+        public int? CourseId { get; set; }
         public DateTime? Date { get; set; }
       
 

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace EducationSysetm.Controller
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class SessionController : ControllerBase
     {
@@ -28,69 +28,79 @@ namespace EducationSysetm.Controller
             _logger = logger;
             _mapper = mapper;
         }
-        [HttpGet]
-        public async Task<IActionResult> GetSessions([FromQuery] PagingDetails paging, string sortOrder, string searchString)
-        {
-
-            if (!String.IsNullOrEmpty(searchString))
-            {
-
-                var sessions = await _uow.Sessions.GetAllAsync(paging, x => x.SessionNumber.Contains(searchString) || x.Date.ToString().Contains(searchString));
-
-                switch (sortOrder)
-                {
-                    case "SessionNumber_desc":
-                        sessions = await _uow.Sessions.GetAllAsync(paging, x => x.SessionNumber.Contains(searchString) || x.Date.ToString().Contains(searchString),
-                                                      y => y.OrderByDescending(x => x.SessionNumber));
-                        break;
-                    case "SessionNumber_asc":
-                        sessions = await _uow.Sessions.GetAllAsync(paging, x => x.SessionNumber.Contains(searchString) || x.Date.ToString().Contains(searchString),
-                                                  y => y.OrderBy(x => x.SessionNumber));
-                        break;
-                    case "Date_desc":
-                        sessions = await _uow.Sessions.GetAllAsync(paging, x => x.SessionNumber.Contains(searchString) || x.Date.ToString().Contains(searchString),
-                                                 y => y.OrderByDescending(x => x.Date));
-                        break;
-                    case "Date_asc":
-                        sessions = await _uow.Sessions.GetAllAsync(paging, x => x.SessionNumber.Contains(searchString) || x.Date.ToString().Contains(searchString),
-                                                 y => y.OrderBy(x => x.Date));
-                        break;
-
-                    default:
-                        sessions = await _uow.Sessions.GetAllAsync(paging, x => x.SessionNumber.Contains(searchString) || x.Date.ToString().Contains(searchString));
-
-                        break;
-                }
-                Utility.Result(sessions, Response);
-                return Ok(_mapper.Map<IList<SessionGetDto>>(sessions));
-
-            }
-            var result = await _uow.Sessions.GetAllAsync(paging);
-            Utility.Result(result, Response);
-            return Ok(_mapper.Map<IList<SessionGetDto>>(result));
-
-        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSessionById(int id)
         {
 
-            var sessionItem = await _uow.Sessions.GetAsync(x => x.Id == id, new List<string>() { "Teacher" });
-            if (sessionItem != null)
+            var sessionsItem = await _uow.Sessions.GetAsync(x => x.Id == id);
+            if (sessionsItem != null)
             {
-                return Ok(_mapper.Map<SessionGetDto>(sessionItem));
+                return Ok(_mapper.Map<SessionGetDto>(sessionsItem));
 
             }
-            _logger.LogError("Something Went Wrong Try Later.");
+            _logger.LogError("Something Went Wrong Try again.");
             return NotFound();
 
 
         }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateSession(SessionAddDto  sessionAddDto )
+        [HttpGet]
+        public async Task<IActionResult> GetSessions([FromQuery] PagingDetails paging, string sortOrder, string searchString, DateTime? sessionDate,int? courseId)
         {
-            var sessionItem = _mapper.Map<Session>(sessionAddDto);
+            var sessions = await _uow.Sessions.FindAllAsync(paging);
+
+            if (courseId!=0 && courseId!=null)
+            {
+                sessions = sessions.Where(x => x.CourseId==courseId);
+
+            }
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                sessions = sessions.Where(x => x.SessionTitle.Contains(searchString));
+            }
+
+            if (sessionDate.HasValue)
+            {
+                sessions = sessions.Where(x => x.Date == sessionDate);
+            }
+
+            switch (sortOrder)
+            {
+                case "SessionTitle_desc":
+
+                    sessions = sessions.OrderByDescending(x => x.SessionTitle).ThenByDescending(x => x.Date);
+                    break;
+                case "SessionTitle_asc":
+                    sessions = sessions.OrderBy(x => x.SessionTitle).ThenByDescending(x => x.Date);
+                    break;
+
+
+                case "SessionDate_desc":
+                    sessions = sessions.OrderByDescending(x => x.Date).ThenBy(x => x.SessionTitle);
+                    break;
+
+                case "SessionDate_asc":
+                    sessions = sessions.OrderBy(x => x.Date).ThenBy(x => x.SessionTitle);
+                    break;
+
+                default:
+                    sessions = sessions.OrderByDescending(x => x.Date).ThenBy(x => x.SessionTitle);
+                    break;
+            }
+
+            var result = PagedList<Session>.ToPagedList(sessions, paging.PageNumber, paging.PageSize);
+            Utility.Result(result, Response);
+            return Ok(_mapper.Map<IList<SessionGetDto>>(result));
+
+        }
+
+
+        [HttpPost("course/{courseid}")]
+        public async Task<IActionResult> CreateSession(SessionAddDto  sessionAddDto , int courseid)
+        {
+             var sessionItem = _mapper.Map<Session>(sessionAddDto);
+            sessionItem.CourseId = courseid;
             await _uow.Sessions.AddAsync(sessionItem);
             await _uow.Save();
             return Ok("Success");
@@ -170,23 +180,23 @@ namespace EducationSysetm.Controller
 
         }
       
-        [HttpPost("{id}"), ActionName("Delete")]
-        public async Task<IActionResult> DeleteSessionfromCoursess(int id,  [FromQuery] int? courseId)
-        {
-            var session = await _uow.Sessions.GetAsync(x => x.Id == id);
-            if (session == null)
-            {
-                return NotFound("it's not found in the database");
-            }      
-            if (courseId != null)
-            {
-                session.CourseId = null;
+        //[HttpPost("{sessionid}"), ActionName("Delete")]
+        //public async Task<IActionResult> DeleteSessionfromCoursess(int sessionid,  [FromQuery] int? courseId)
+        //{
+        //    var session = await _uow.Sessions.GetAsync(x => x.Id == sessionid);
+        //    if (session == null)
+        //    {
+        //        return NotFound("it's not found in the database");
+        //    }      
+        //    if (courseId != null)
+        //    {
+        //        session.CourseId = null;
 
-            }
-            await _uow.Save();
-            return Ok("Success");
+        //    }
+        //    await _uow.Save();
+        //    return Ok("Success");
 
-        }
+        //}
         [HttpPost("{id}/Student"), ActionName("Delete")]
         public async Task<IActionResult> DeleteStudentfromSession(int id, [FromQuery] int? studentId)
         {

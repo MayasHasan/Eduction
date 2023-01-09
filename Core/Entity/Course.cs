@@ -14,18 +14,14 @@ namespace Core.Entity
         public string Description { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public CourseLevel Level { get; set; }
+        public string Level { get; set; }
         public Teacher Teacher { get; set; }
         public int? TeacherId { get; set; }
         public IList<Student> Students { get; set; }
         public IList<Session> Sessions { get; set; }
+        public IList<File> Files { get; set; } = null;
+
 
     }
-    public enum CourseLevel
-    {
-        Beginner = 1,
-        Intermediate = 2,
-        Advanced = 3
 
-    }
 }

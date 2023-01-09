@@ -11,7 +11,7 @@ namespace EducationSysetm.Validation
     {
         public SessionAddDtoValidation()
         {
-            RuleFor(s => s.SessionNumber).NotNull()
+            RuleFor(s => s.SessionTitle).NotNull()
                .NotEmpty().WithMessage("{PropertyName} should be not empty. NEVER!")
                .MinimumLength(0)
                .MaximumLength(10);

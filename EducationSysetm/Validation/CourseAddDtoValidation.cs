@@ -19,7 +19,7 @@ namespace EducationSysetm.Validation
 
             RuleFor(c => c.FullPrice).NotNull().NotEmpty().WithMessage("{PropertyName} should be not empty. NEVER!");
             RuleFor(c => c.Level).NotNull().NotEmpty().WithMessage("{PropertyName} should be not empty. NEVER!");
-            RuleFor(c => c.StartDate).NotNull().NotEmpty().WithMessage("{PropertyName} should be not empty. NEVER!");
+           // RuleFor(c => c.StartDate).NotNull().NotEmpty().WithMessage("{PropertyName} should be not empty. NEVER!");
            
               
 

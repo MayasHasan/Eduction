@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace EducationSysetm.Controller
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class StudentController : ControllerBase
     {
@@ -28,59 +28,71 @@ namespace EducationSysetm.Controller
             _logger = logger;
             _mapper = mapper;
         }
-        [HttpGet]
-        public async Task<IActionResult> GetStudents([FromQuery] PagingDetails paging, string sortOrder, string searchString)
-        {
+        
 
+        [HttpGet]
+        public async Task<IActionResult> GetStudents([FromQuery] PagingDetails paging, string sortOrder, string searchString, string level, DateTime? joinedDateFrom, DateTime? joinedDateTo)
+        {
+            var students = await _uow.Students.FindAllAsync(paging);
             if (!String.IsNullOrEmpty(searchString))
             {
-
-                var students = await _uow.Students.GetAllAsync(paging, x => x.FirstName.Contains(searchString) || x.LastName.Contains(searchString));
-
-                switch (sortOrder)
-                {
-                    case "FirstName_desc":
-                        students = await _uow.Students.GetAllAsync(paging, x => x.FirstName.Contains(searchString) || x.LastName.Contains(searchString),
-                                                      y => y.OrderByDescending(x => x.FirstName));
-                        break;
-                    case "FirstName_asc":
-                        students = await _uow.Students.GetAllAsync(paging, x => x.FirstName.Contains(searchString) || x.LastName.Contains(searchString),
-                                                  y => y.OrderBy(x => x.FirstName));
-                        break;
-                    case "LastName_desc":
-                        students = await _uow.Students.GetAllAsync(paging, x => x.FirstName.Contains(searchString) || x.LastName.Contains(searchString),
-                                                 y => y.OrderByDescending(x => x.LastName));
-                        break;
-                    case "LastName_asc":
-                        students = await _uow.Students.GetAllAsync(paging, x => x.FirstName.Contains(searchString) || x.LastName.Contains(searchString),
-                                                 y => y.OrderBy(x => x.LastName));
-                        break;
-
-                    default:
-                        students = await _uow.Students.GetAllAsync(paging, x => x.FirstName.Contains(searchString) || x.LastName.Contains(searchString));
-
-                        break;
-                }
-                Utility.Result(students, Response);
-                return Ok(_mapper.Map<IList<StudentGetDto>>(students));
-
+                students = students.Where(x => x.FirstName.Contains(searchString) || x.LastName.Contains(searchString));
             }
-            var result = await _uow.Students.GetAllAsync(paging);
+           
+            if (!String.IsNullOrEmpty(level))
+            {
+                students = students.Where(x => x.Level == level);
+            }
+            if (joinedDateFrom.HasValue && !joinedDateTo.HasValue)
+            {
+                students = students.Where(x => x.JoinedDate == joinedDateFrom);
+            }
+
+            if (joinedDateFrom.HasValue && joinedDateTo.HasValue)
+            {
+                students = students.Where(x => x.JoinedDate >= joinedDateFrom && x.JoinedDate <= joinedDateTo);
+            }
+            switch (sortOrder)
+            {
+                case "FirstName_desc":
+
+                    students = students.OrderByDescending(x => x.FirstName).ThenByDescending(x => x.Level).ThenByDescending(x => x.JoinedDate);
+                    break;
+                case "FirstName_asc":
+                    students = students.OrderBy(x => x.FirstName).ThenByDescending(x => x.Level).ThenByDescending(x => x.JoinedDate);
+                    break;
+           
+                case "JoinedDate_asc":
+                    students = students.OrderBy(x => x.JoinedDate).ThenBy(x => x.FirstName).ThenByDescending(x => x.Level);
+                    break;
+
+                default:
+                    students = students.OrderByDescending(x => x.JoinedDate).ThenBy(x => x.FirstName).ThenByDescending(x => x.Level);
+                    break;
+            }
+
+            var result = PagedList<Student>.ToPagedList(students, paging.PageNumber, paging.PageSize);
             Utility.Result(result, Response);
             return Ok(_mapper.Map<IList<StudentGetDto>>(result));
 
         }
 
+
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetStudentById(int id)
+        public async Task<IActionResult> GetStudentById(int id )
         {
 
-            var studentItem = await _uow.Students.GetAsync(x => x.Id == id, new List<string>() { "Teacher" });
+            var studentItem = await _uow.Students.GetAsync(x => x.Id == id, new List<string>() { "Courses"});
             if (studentItem != null)
             {
+               
                 return Ok(_mapper.Map<StudentGetDto>(studentItem));
 
             }
+        
+
+
             _logger.LogError("Something Went Wrong Try Later.");
             return NotFound();
 

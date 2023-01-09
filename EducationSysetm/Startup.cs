@@ -58,7 +58,7 @@ namespace EducationSysetm
                                  Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddControllers(x => x.AllowEmptyInputInBodyModelBinding = true);
 
-            services.AddCors(o => o.AddPolicy("AllowAll ", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+            services.AddCors();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IAuthService, AuthService>();
@@ -95,6 +95,7 @@ namespace EducationSysetm
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors(x=>x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000").WithExposedHeaders("X-Pagination"));
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -102,7 +103,6 @@ namespace EducationSysetm
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "EducationSysetm v1"));
             }
             app.UseHttpsRedirection();
-            app.UseCors("AllowAll");
 
             app.UseRouting();
             app.UseAuthentication();

@@ -14,7 +14,7 @@ namespace DataAccessEF.FluentApIConfig
         {
 
 
-            builder.Property(s => s.SessionNumber)
+            builder.Property(s => s.SessionTitle)
                    .IsRequired()
                    .HasMaxLength(20);
 

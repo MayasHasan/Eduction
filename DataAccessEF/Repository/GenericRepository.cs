@@ -32,13 +32,17 @@ namespace DataAccessEF.Repository
             await _dbSet.AddRangeAsync(entities);
             return entities;
         }
-   
-       
+        public async Task<IEnumerable<T>> GetAllAsync()
+        {
+            return await _context.Set<T>().ToListAsync();
+        }
+
         public async Task<PagedList<T>> GetAllAsync(PagingDetails pagingDetails, Expression<Func<T, bool>> exprssion = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<string> includes = null)
         {
 
+
             IQueryable<T> query = _dbSet;
-            if (exprssion!=null)
+            if (exprssion != null)
             {
                 query = query.Where(exprssion);
             }
@@ -49,11 +53,11 @@ namespace DataAccessEF.Repository
                     query = query.Include(includePropery);
                 }
             }
-            if (orderBy!=null)
+            if (orderBy != null)
             {
                 query = orderBy(query);
             }
-            return PagedList<T>.ToPagedList( query, pagingDetails.PageNumber, pagingDetails.PageSize);
+            return PagedList<T>.ToPagedList(query, pagingDetails.PageNumber, pagingDetails.PageSize);
         }
 
         public async Task<T> GetByIdAsync(int id)
@@ -76,7 +80,7 @@ namespace DataAccessEF.Repository
 
         public async Task Delete(int id)
         {
-             var entity = await GetByIdAsync(id);
+            var entity = await GetByIdAsync(id);
             if (entity == null)
             {
                 throw new ArgumentNullException(" Entity Not Found");
@@ -102,11 +106,34 @@ namespace DataAccessEF.Repository
         }
         public async Task<int> CountAsync()
         {
-         
+
             return await _dbSet.CountAsync();
 
         }
 
-    
+        public async Task<IEnumerable<T>> FindAllAsync(PagingDetails pagingDetails, Expression<Func<T, bool>> exprssion = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<string> includes = null)
+        {
+            IQueryable<T> query = _dbSet;
+
+            if (exprssion != null)
+            {
+                query = query.Where(exprssion);
+            }
+            if (includes != null)
+            {
+                foreach (var includePropery in includes)
+                {
+                    query = query.Include(includePropery);
+                }
+            }
+            if (orderBy != null)
+            {
+                query = orderBy(query);
+            }
+            return await query.ToListAsync();
+
+        }
     }
 }
+
+

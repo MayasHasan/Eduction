@@ -18,6 +18,8 @@ using System.Threading.Tasks;
 
 namespace EducationSysetm.Controller
 {
+   
+
     [Route("api/v1/[controller]")]
     [ApiController]
     public class CourseController : ControllerBase
@@ -33,59 +35,162 @@ namespace EducationSysetm.Controller
             _logger = logger;
             _mapper = mapper;
         }
-        [HttpGet]
-        public async Task<IActionResult> GetCourses([FromQuery] PagingDetails paging, string sortOrder, string searchString)
+
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetCoursesAsync()
         {
-
-            if (!String.IsNullOrEmpty(searchString))
-            {
-          
-                var courses = await _uow.Courses.GetAllAsync(paging, x => x.Title.Contains(searchString) || x.FullPrice.ToString().Contains(searchString));
-
-                switch (sortOrder)
-                {
-                    case "Title_desc":
-                        courses = await _uow.Courses.GetAllAsync(paging, x => x.Title.Contains(searchString) || x.FullPrice.ToString().Contains(searchString),
-                                                      y => y.OrderByDescending(x => x.Title));
-                        break;
-                    case "Title_asc":
-                        courses = await _uow.Courses.GetAllAsync(paging, x => x.Title.Contains(searchString) || x.FullPrice.ToString().Contains(searchString),
-                                                  y => y.OrderBy(x => x.Title));
-                        break;
-                    case "FulPrice_desc":
-                        courses = await _uow.Courses.GetAllAsync(paging, x => x.Title.Contains(searchString) || x.FullPrice.ToString().Contains(searchString),
-                                                 y => y.OrderByDescending(x => x.FullPrice));
-                        break;
-                    case "FulPrice_asc":
-                        courses = await _uow.Courses.GetAllAsync(paging, x => x.Title.Contains(searchString) || x.FullPrice.ToString().Contains(searchString),
-                                                 y => y.OrderBy(x => x.FullPrice));
-                        break;
-
-                    default:
-                        courses = await _uow.Courses.GetAllAsync(paging, x => x.Title.Contains(searchString) || x.FullPrice.ToString().Contains(searchString));
-
-                        break;
-                }
-                Utility.Result(courses , Response);
-                return Ok(_mapper.Map<IList<CourseGetDto>>(courses));
-
-            }
-            var result = await _uow.Courses.GetAllAsync(paging); 
-            Utility.Result(result,Response);
-            return Ok(_mapper.Map<IList<CourseGetDto>>(result));
-
+            var course = await _uow.Courses.GetAllAsync();
+            return Ok(_mapper.Map<IList<CourseGetDto>>(course));
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCourseById(int id)
+        [HttpGet]
+        public async Task<IActionResult> GetCourses([FromQuery] PagingDetails paging, string sortOrder, string title, string level, decimal? price, DateTime? startDate, DateTime? endDate )
         {
 
-            var courseItem = await _uow.Courses.GetAsync(x => x.Id == id, new List<string>() { "Students" ,"Sessions" });
+            var courses = await _uow.Courses.FindAllAsync(paging);
+
+
+            if (!String.IsNullOrEmpty(title))
+            {
+                courses = courses.Where(s => s.Title.Contains(title));
+            }
+
+            if (!String.IsNullOrEmpty(level))
+            {
+                courses = courses.Where(x => x.Level == level);
+            }
+
+            if (price != null)
+            {
+                courses = courses.Where(x => x.FullPrice == price);
+            }
+
+            if (startDate.HasValue && !endDate.HasValue)
+            {
+                courses = courses.Where(x => x.StartDate == startDate);
+            }
+
+            if (!startDate.HasValue && endDate.HasValue)
+            {
+                courses = courses.Where(x => x.EndDate == endDate);
+            }
+
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                courses = courses.Where(x => x.StartDate >= startDate && x.EndDate <= endDate);
+            }
+
+            switch (sortOrder)
+            {
+                case "Title_desc":
+
+                    courses = courses.OrderByDescending(x => x.Title).ThenByDescending(x => x.StartDate);
+                    break;
+                case "Title_asc":
+                    courses = courses.OrderBy(x => x.Title).ThenByDescending(x => x.StartDate);
+                    break;
+                case "FulPrice_desc":
+                    courses = courses.OrderByDescending(x => x.FullPrice).ThenByDescending(x => x.StartDate);
+                    break;
+                case "FulPrice_asc":
+                    courses = courses.OrderBy(x => x.Title).ThenByDescending(x => x.StartDate);
+                    break;
+                case "Level_desc":
+                    courses = courses.OrderByDescending(x => x.Level).ThenByDescending(x => x.StartDate);
+                    break;
+
+                case "Level_asc":
+                    courses = courses.OrderBy(x => x.Level).ThenByDescending(x => x.StartDate);
+                    break;
+
+                case "StartDate_asc":
+                    courses = courses.OrderBy(x => x.StartDate).ThenBy(x => x.Title);
+                    break;
+
+                default:
+                    courses = courses.OrderByDescending(x => x.StartDate).ThenBy(x => x.Title);
+                    break;
+            }
+
+            var result = PagedList<Course>.ToPagedList(courses, paging.PageNumber, paging.PageSize);
+            Utility.Result(result, Response);
+            return Ok(_mapper.Map<IList<CourseGetDto>>(result));
+        }
+        //[HttpGet("pv/{a?}")]
+        //[HttpGet("pv/{a?}/{Id?}")]
+        //[HttpGet("pv/{a?}/{MasterId?}/{Id?}")]
+
+
+        //public IActionResult Test(string a, string MasterId, string Id)
+        //{
+        //    var dict = ControllerContext.ActionDescriptor.;
+        //    return Ok(ControllerContext.ActionDescriptor.AttributeRouteInfo.Template);
+        //    return Ok(dict);
+
+        //}
+
+
+        //  [HttpGet]
+
+        ////  [Route("{title?}/{level?}/{price?}")]
+        //  public async Task<IActionResult> GetCourses([FromQuery] PagingDetails paging, string sortOrder,  string title,  string level, decimal? price, DateTime? startDate, DateTime? endDate)
+        //  {
+
+        //      var courses = await _uow.Courses.FindAllAsync(paging);
+
+        //      switch (sortOrder)
+        //      {
+        //          case "Title_desc":
+
+        //              courses = courses.OrderByDescending(x => x.Title).ThenByDescending(x => x.StartDate);
+        //              break;
+        //          case "Title_asc":
+        //              courses = courses.OrderBy(x => x.Title).ThenByDescending(x => x.StartDate);
+        //              break;
+        //          case "FulPrice_desc":
+        //              courses = courses.OrderByDescending(x => x.FullPrice).ThenByDescending(x => x.StartDate);
+        //              break;
+        //          case "FulPrice_asc":
+        //              courses = courses.OrderBy(x => x.Title).ThenByDescending(x => x.StartDate);
+        //              break;
+        //          case "Level_desc":
+        //              courses = courses.OrderByDescending(x => x.Level).ThenByDescending(x => x.StartDate);
+        //              break;
+
+        //          case "Level_asc":
+        //              courses = courses.OrderBy(x => x.Level).ThenByDescending(x => x.StartDate);
+        //              break;
+
+        //          case "StartDate_asc":
+        //              courses = courses.OrderBy(x => x.StartDate).ThenByDescending(x => x.Title);
+        //              break;
+
+        //          default:
+        //              courses = courses.OrderByDescending(x => x.StartDate).ThenByDescending(x => x.Title);
+        //              break;
+        //      }
+
+        //      var result = PagedList<Course>.ToPagedList(courses, paging.PageNumber, paging.PageSize);
+        //      Utility.Result(result, Response);
+        //      return Ok(_mapper.Map<IList<CourseGetDto>>(result));
+        //  }
+
+
+
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCourseById(int id )
+        {
+
+            var courseItem = await _uow.Courses.GetAsync(x => x.Id == id, new List<string>() { "Students" ,"Sessions", "Teacher" });
             if (courseItem != null)
             {
                 return Ok(_mapper.Map<CourseGetDto>(courseItem));
 
             }
+
+
             _logger.LogError("Something Went Wrong Try Later.");
             return NotFound();
 

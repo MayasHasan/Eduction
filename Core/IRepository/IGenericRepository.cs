@@ -9,22 +9,24 @@ using System.Threading.Tasks;
 
 namespace Core.IRepository
 {
-     public interface IGenericRepository<T> where T : class
+    public interface IGenericRepository<T> where T : class
     {
         Task<T> GetByIdAsync(int id);
 
-        Task<PagedList<T>> GetAllAsync(PagingDetails pagingDetails,
-            Expression<Func<T, bool>> exprssion = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
-            List<string> includes = null);
+        Task<IEnumerable<T>> GetAllAsync();
+
         Task<T> GetAsync(Expression<Func<T, bool>> exprssion, List<string> includes = null);
         Task<T> AddAsync(T entity);
-        Task<IEnumerable<T>> AddRangeASync(IEnumerable<T>entities);
+        Task<IEnumerable<T>> AddRangeASync(IEnumerable<T> entities);
         Task Delete(int id);
         void DeleteRange(IEnumerable<T> entities);
         T Update(T entity);
         Task<int> CountAsync();
+        Task<IEnumerable<T>> FindAllAsync(PagingDetails pagingDetails, Expression<Func<T, bool>> exprssion = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, List<string> includes = null);
 
-
+        Task<PagedList<T>> GetAllAsync(PagingDetails pagingDetails,
+      Expression<Func<T, bool>> exprssion = null,
+      Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
+      List<string> includes = null);
     }
 }

@@ -7,8 +7,10 @@ namespace EducationSysetm.Dtos
 {
     public class SessionUpdateDto
     {
-        public int Id { get; set; }
-        public string SessionNumber { get; set; }
+        public string SessionTitle { get; set; }
+        public string Description { get; set; }
+        public int? CourseId { get; set; }
+
         public DateTime? Date { get; set; }
     }
 }
